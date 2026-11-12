@@ -1,15 +1,20 @@
 package com.bbu.attendance.clazz.repository;
 
-/**
- * ម៉ូឌុលទី ២៖ Class Management & Dynamic Invite Code
- * សមាជិកទទួលខុសត្រូវ៖ មុត ភិរាក់នាន់ (វេនថ្ងៃព្រហស្បតិ៍)
- * ទីតាំង File៖ src/main/java/com/bbu/attendance/clazz/repository/ClassRepository.java
- *
- * ការណែនាំ៖
- * - Extend: JpaRepository<ClassEntity, Long>
- * - បន្ថែម Methods: findByInviteCode(String inviteCode), findByTeacherId(Long teacherId)
- * - យោងតាម៖ ជំពូកទី ៤ នៃ WEEK_2_FULL_CODE_REFERENCE.md
- */
-public interface ClassRepository {
-    // TODO [មុត ភិរាក់នាន់]: សរសេរ JPA Queries សម្រាប់ ClassEntity នៅទីនេះ
+import com.bbu.attendance.clazz.entity.ClassEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ClassRepository extends JpaRepository<ClassEntity, Long> {
+    Optional<ClassEntity> findByCode(String code);
+    Optional<ClassEntity> findByInviteCode(String inviteCode);
+    boolean existsByCode(String code);
+    boolean existsByInviteCode(String inviteCode);
+
+    @Query("SELECT c FROM ClassEntity c JOIN FETCH c.teacher WHERE c.teacher.id = :teacherId")
+    List<ClassEntity> findByTeacherId(Long teacherId);
 }
