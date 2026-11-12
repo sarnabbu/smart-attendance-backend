@@ -25,6 +25,16 @@
       "key": "admin_jwt_token",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "class_invite_code",
+      "value": "BBU-7X9K",
+      "type": "string"
+    },
+    {
+      "key": "class_id",
+      "value": "1",
+      "type": "string"
     }
   ],
   "item": [
@@ -906,6 +916,229 @@
           "path": [
             "api",
             "rooms"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "25. គ្រូបង្កើតថ្នាក់រៀនថ្មី ចេញ Invite Code (Teacher Create Class - 201 Created)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.data && jsonData.data.inviteCode) {",
+              "    pm.collectionVariables.set('class_invite_code', jsonData.data.inviteCode);",
+              "    pm.collectionVariables.set('class_id', jsonData.data.id);",
+              "    console.log('Saved inviteCode: ' + jsonData.data.inviteCode);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{teacher_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"CS-301\",\n  \"name\": \"Software Architecture & Enterprise Spring Boot\",\n  \"description\": \"Year 4 Semester 1 IT Capstone Course\",\n  \"maxStudents\": 50\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/classes",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "classes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "26. គ្រូមើលបញ្ជីថ្នាក់រៀនរបស់ខ្លួន (Teacher Get My Classes - 200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{teacher_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/classes/my-classes",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "classes",
+            "my-classes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "27. សិស្សចុះឈ្មោះចូលរៀនតាម Invite Code (Student Join Class - 200 OK)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inviteCode\": \"{{class_invite_code}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/classes/join",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "classes",
+            "join"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "28. តេស្ត Duplicate Guard: សិស្សចុះឈ្មោះចូលថ្នាក់ដដែលម្តងទៀតត្រូវបរាជ័យ (Duplicate Join - Error)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inviteCode\": \"{{class_invite_code}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/classes/join",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "classes",
+            "join"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "29. តេស្ត Invite Code មិនត្រឹមត្រូវត្រូវបរាជ័យ (Invalid Invite Code - Error)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inviteCode\": \"BBU-XXXX-INVALID\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/classes/join",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "classes",
+            "join"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "30. គ្រូមើលបញ្ជីសិស្សដែលបាន Enroll ក្នុងថ្នាក់ (Get Enrolled Students - 200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{teacher_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/classes/{{class_id}}/students",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "classes",
+            "{{class_id}}",
+            "students"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "31. តេស្ត RBAC: សិស្សបង្កើតថ្នាក់រៀនត្រូវបដិសេធ (Student Cannot Create Class - 403 Forbidden)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"HACK-101\",\n  \"name\": \"Illegal Student Class\",\n  \"maxStudents\": 10\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/classes",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "classes"
           ]
         }
       },
