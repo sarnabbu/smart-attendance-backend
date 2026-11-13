@@ -1143,6 +1143,191 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "32. សិស្សចងភ្ជាប់ទូរស័ព្ទលើកដំបូង (Student Bind Device UUID - 200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Device bound successfully\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.eql(true);",
+              "    pm.expect(jsonData.data.deviceUuid).to.eql(\"IPHONE-UUID-12345-ABCDE\");",
+              "    pm.collectionVariables.set(\"device_id\", jsonData.data.id);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"deviceUuid\": \"IPHONE-UUID-12345-ABCDE\",\n  \"deviceName\": \"iPhone 15 Pro Max\",\n  \"platform\": \"iOS\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/devices/bind",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "devices",
+            "bind"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "33. តេស្ត Anti-Proxy Guard: សិស្សព្យាយាមចងទូរស័ព្ទទី ២ ត្រូវបដិសេធ (Attempt 2nd Device - 400 Bad Request)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"Anti-Proxy Guard blocked duplicate binding\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.eql(false);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"deviceUuid\": \"SAMSUNG-UUID-99999-XYZ\",\n  \"deviceName\": \"Galaxy S24 Ultra\",\n  \"platform\": \"Android\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/devices/bind",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "devices",
+            "bind"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "34. សិស្សមើលព័ត៌មានទូរស័ព្ទដែលបានចងភ្ជាប់ (Get My Device - 200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Returns active bound device\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.eql(true);",
+              "    pm.expect(jsonData.data.isActive).to.eql(true);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/devices/my-device",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "devices",
+            "my-device"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "35. Admin ធ្វើការ Reset ឧបករណ៍សិស្សពេលបាត់ទូរស័ព្ទ (Admin Reset Student Device - 200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Device reset successfully\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.eql(true);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/devices/reset/student/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "devices",
+            "reset",
+            "student",
+            "1"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }

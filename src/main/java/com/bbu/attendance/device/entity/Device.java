@@ -1,15 +1,50 @@
 package com.bbu.attendance.device.entity;
 
-/**
- * ម៉ូឌុលទី ៣៖ Anti-Proxy Device UUID Binding Guard
- * សមាជិកទទួលខុសត្រូវ៖ សេង ស៊ីមផា (វេនថ្ងៃសុក្រ)
- * ទីតាំង File៖ src/main/java/com/bbu/attendance/device/entity/Device.java
- *
- * ការណែនាំ៖
- * - បន្ថែម Unique Constraint លើ device_uuid និង student_id (One Student = One Trusted Phone)
- * - បំពេញ Attributes: id, studentId, deviceUuid, deviceModel, osVersion, isBlocked, boundAt, lastSeenAt
- * - យោងតាម៖ ជំពូកទី ៤ នៃ WEEK_2_FULL_CODE_REFERENCE.md
- */
+import com.bbu.attendance.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "devices", indexes = {
+    @Index(name = "idx_devices_device_uuid", columnList = "device_uuid")
+})
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Device {
-    // TODO [សេង ស៊ីមផា]: សរសេរកូដ JPA Entity សម្រាប់ Table devices នៅទីនេះ
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(name = "device_uuid", unique = true, nullable = false)
+    private String deviceUuid;
+
+    @Column(name = "device_name", length = 100)
+    private String deviceName;
+
+    @Column(length = 50)
+    private String platform; // "iOS", "Android"
+
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
+
+    @CreationTimestamp
+    @Column(name = "registered_at", updatable = false)
+    private LocalDateTime registeredAt;
+
+    @UpdateTimestamp
+    @Column(name = "last_used_at")
+    private LocalDateTime lastUsedAt;
 }
