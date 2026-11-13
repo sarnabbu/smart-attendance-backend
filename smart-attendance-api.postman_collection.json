@@ -1328,6 +1328,56 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "36. សិស្សអាចចងភ្ជាប់ទូរស័ព្ទថ្មីឡើងវិញក្រោយ Admin Reset (Re-bind New Device After Reset - 200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"New device bound successfully after admin reset\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.eql(true);",
+              "    pm.expect(jsonData.data.deviceUuid).to.eql(\"IPHONE-UUID-NEW-PHONE-67890\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"deviceUuid\": \"IPHONE-UUID-NEW-PHONE-67890\",\n  \"deviceName\": \"iPhone 16 Pro\",\n  \"platform\": \"iOS\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/devices/bind",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "devices",
+            "bind"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
