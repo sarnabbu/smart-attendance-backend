@@ -1,15 +1,18 @@
 package com.bbu.attendance.device.repository;
 
-/**
- * ម៉ូឌុលទី ៣៖ Anti-Proxy Device UUID Binding Guard
- * សមាជិកទទួលខុសត្រូវ៖ សេង ស៊ីមផា (វេនថ្ងៃសុក្រ)
- * ទីតាំង File៖ src/main/java/com/bbu/attendance/device/repository/DeviceRepository.java
- *
- * ការណែនាំ៖
- * - Extend: JpaRepository<Device, Long>
- * - បន្ថែម Methods: findByStudentId(Long studentId), findByDeviceUuid(String deviceUuid), existsByDeviceUuid(String deviceUuid)
- * - យោងតាម៖ ជំពូកទី ៤ នៃ WEEK_2_FULL_CODE_REFERENCE.md
- */
-public interface DeviceRepository {
-    // TODO [សេង ស៊ីមផា]: សរសេរ JPA Queries សម្រាប់ Device នៅទីនេះ
+import com.bbu.attendance.device.entity.Device;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface DeviceRepository extends JpaRepository<Device, Long> {
+    Optional<Device> findByUserIdAndIsActiveTrue(Long userId);
+    Optional<Device> findByDeviceUuid(String deviceUuid);
+    boolean existsByDeviceUuid(String deviceUuid);
+
+    @Query("SELECT d FROM Device d JOIN FETCH d.user WHERE d.user.id = :userId AND d.isActive = true")
+    Optional<Device> findActiveDeviceWithUser(Long userId);
 }
